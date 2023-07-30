@@ -80,31 +80,6 @@ class Game:
         self.show(True)
         self.evaluate(True)
 
-    def evaluate(self):
-        greatest_hand = []
-        blackjack_num = 0
-        self.convert_aces()
-        for hand in [self.dealer_cards,self.player_cards]:
-            if sum(hand) > 21:
-                return 'bust'      
-            elif len(hand) == 2 and 11 in hand and 10 in hand:
-                #blackjack message
-                if blackjack_num == 0: 
-                    greatest_hand = hand
-                else:
-                    greatest_hand.append(hand)
-                blackjack_num += 1
-            elif sum(hand) > sum(greatest_hand):
-                greatest_hand = hand
-            #need elif with dealer identification for ties <-- somewhere in the Hand class I need to get the name of the player associated with that hand
-
-        if blackjack_num == 1:
-            return 'blackjack'
-        if blackjack_num > 1:
-            return 'multiple blackjacks'
-        else:
-            return f"Highest hand is {', '.join(str(x) for x in self.player_cards)} - total: {sum(self.player_cards)}"
-
     def evaluate(self, display = False):
 
         player_bust = False
