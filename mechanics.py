@@ -53,38 +53,6 @@ class Game:
         def stand(self):
             pass
 
-    def evaluate(self, *hands):
-        greatest_hand = []
-        blackjack_num = 0
-        for hand in hands:
-            aces = []
-            for i, num in enumerate(hand):
-                if num == 'a':
-                    aces.append(hand.pop(i))
-            if len(aces) > 0:
-                for ace in aces:
-                    if sum(hand) <= 10:
-                        hand.append(11)
-                    else:
-                        hand.append(1)
-                #need contingency for 2 aces + 10 or 3 + 9 or 4 + 8 
-                    
-            if len(hand) == 2 and len(aces) == 1 and 10 in hand:
-                if blackjack_num == 0: 
-                    greatest_hand = hand
-                else:
-                    greatest_hand.append(hand)
-                blackjack_num += 1
-            elif sum(hand) > sum(greatest_hand):
-                greatest_hand = hand
-            #need elif with dealer identification for ties
-
-        if blackjack_num > 1:
-            return 'multiple blackjacks'
-        else:
-            return greatest_hand
-            
-
     def check_input(self, val):
         while True:
             if val.lower() != 'y' and val.lower() != 'n':
