@@ -43,7 +43,6 @@ class Game:
         print(self.player_cards)
         print(self.dealer_cards)
         print(self.evaluate(self.player_cards, self.dealer_cards))
-
     def show(self):
         pass
 
