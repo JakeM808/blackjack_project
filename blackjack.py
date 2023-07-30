@@ -39,6 +39,7 @@ class Hand:
 class Player:
     def __init__(self, player_name='dealer'):
         self.name = player_name
+        self.hand = Hand()
 
     def hit(self):
             card = Deck.draw()
