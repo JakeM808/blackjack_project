@@ -30,9 +30,11 @@ class Game:
         print('Welcome to the J&J Blackjack table! For all questions asked please respond with a \'y\' for yes or a \'n\' for no.')
         while True:
             start = input('Would you like to start a game? ')
-            if self.check_input(start) == 'y': self.deal()
+            if self.check_input(start) == 'y': 
+                print(f'You currently have a score of {self.player.score}')
+                self.deal()
             else: 
-                print('Sorry to see you go. Come play again soon!')
+                print('Sorry to see you go. Your score was {self.player.score}. Come play again soon!')
                 break
 
     def deal(self):
@@ -61,12 +63,12 @@ class Game:
     def play(self):
         while True:
             action = input('Would you like to hit? ')
-            if self.check_input(action) == 'y': 
-                self.hit()
+            if self.check_input(action) == 'y':
                 if self.evaluate() == 'bust':
                     break
                 if self.evaluate() == 'blackjack' or self.evaluate() == 'dual_blackjacks':
                     break
+                self.hit()
             else: 
                 self.stand()
                 break
@@ -96,22 +98,26 @@ class Game:
             return 'dual_blackjacks'
         elif player_bj == True:
             print(f'You have blackjack.\nYou Win!')
+            self.player.score += 1
             return 'blackjack'
         elif dealer_bj == True:
             print(f'The dealer has blackjack.\nYou Lose.')
+            self.dealer.score += 1
             return 'blackjack'
 
         if self.player.hand.value() > 21:
             print(f"You are bust!")
+            self.dealer.score += 1
             return 'bust'
         elif self.dealer.hand.value() > 21:
             print(f"The dealer is bust!")
+            self.player.score += 1
         elif self.player.hand.value() > self.dealer.hand.value() and display == True:
             print(f"Highest hand is {', '.join(str(x) for x in self.player.hand.cards)} - total: {self.player.hand.value()}\nYou Win!")
+            self.player.score += 1
         elif display == True:
             print(f"Highest hand is {', '.join(str(x) for x in self.dealer.hand.cards)} - total: {self.dealer.hand.value()}\nYou Lose.")
-
-        #add win tracker
+            self.dealer.score += 1
 
 
 
