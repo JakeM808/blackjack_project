@@ -1,4 +1,5 @@
 from typing import Any
+import random as r
 
 
 class Card:
@@ -16,42 +17,25 @@ class Deck:
             if num == 11 or num == 12 or num == 13:
                 self.deck[n] = 10
             if num == 1:
-                self.deck[n] = 'a'
-
-    def draw(self):
-        return self.deck.pop()            
+                self.deck[n] = 'a'        
 
 
 class Hand:
     def __init__(self):
         self.cards = []
 
-    def add_card(self, card):  
-        self.cards.append(card) 
+    def clear_hand(self):
+        self.cards = []
 
+    def add_card(self, deck):  
+        self.cards.append(deck.deck.pop(r.randint(0,len(deck.deck))))
+         
     def value(self):
-        return sum(card.value for card in self.cards)
-
-    def blackjack(self):
-        return self.value == 21
+        return sum(card for card in self.cards)
 
 
 class Player:
     def __init__(self, player_name='dealer'):
         self.name = player_name
         self.hand = Hand()
-
-    def hit(self):
-            card = Deck.draw()
-            self.hand.add_card(card) 
-
-    def stand(self):
-        pass 
-
-    def blackjack(self):
-        return self.hand.blackjack()   
-
-dealer = Player()
-
-player1 = Player('player1')      
-                
+        self.score = 0

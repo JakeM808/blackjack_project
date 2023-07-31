@@ -18,9 +18,14 @@ Notes:
 """
 
 import random as r
+import blackjack as b
 
 class Game:
     def __init__(self):
+        name = input('What is your name? ')
+        self.player = b.Player(name)
+        self.dealer = b.Player()
+
 
         print('Welcome to the J&J Blackjack table! For all questions asked please respond with a \'y\' for yes or a \'n\' for no.')
         while True:
@@ -31,19 +36,14 @@ class Game:
                 break
 
     def deal(self):
-        self.deck = [j for j in range(1,14) for i in range(1, 5)] #to be replaced with Deck()
-        for n, num in enumerate(self.deck):
-            if num == 11 or num == 12 or num == 13:
-                self.deck[n] = 10
-            if num == 1:
-                self.deck[n] = 'a'
-
-        self.player_cards = []
-        self.dealer_cards = []
+        self.deck = b.Deck()
+        self.player.hand.clear_hand()
+        self.dealer.hand.clear_hand()
 
         for i in range(2):
-            self.player_cards.append(self.deck.pop(r.randint(0,len(self.deck))))
-            self.dealer_cards.append(self.deck.pop(r.randint(0,len(self.deck))))
+            self.player.hand.add_card(self.deck)
+            self.dealer.hand.add_card(self.deck)
+
         self.show()
         self.evaluate()
         self.play()
@@ -51,12 +51,12 @@ class Game:
     def show(self, end=False):
         if end == True:
             self.convert_aces()
-            print(f"Player hand - {', '.join(str(x) for x in self.player_cards)} - total: {sum(self.player_cards)}")
-            print(f"Dealer hand - {', '.join(str(x) for x in self.dealer_cards)} - total: {sum(self.dealer_cards)}")
+            print(f"Player hand - {', '.join(str(x) for x in self.player.hand.cards)} - total: {self.player.hand.value()}")
+            print(f"Dealer hand - {', '.join(str(x) for x in self.dealer.hand.cards)} - total: {self.dealer.hand.value()}")
         else:
             self.convert_aces()
-            print(f"Player hand - {', '.join(str(x) for x in self.player_cards)} - total: {sum(self.player_cards)}")
-            print(f'Dealer hand - {self.dealer_cards[0]} - total: unknown')
+            print(f"Player hand - {', '.join(str(x) for x in self.player.hand.cards)} - total: {self.player.hand.value()}")
+            print(f'Dealer hand - {self.dealer.hand.cards[0]} - total: unknown')
 
     def play(self):
         while True:
@@ -65,33 +65,31 @@ class Game:
                 self.hit()
                 if self.evaluate() == 'bust':
                     break
+                if self.evaluate() == 'blackjack' or self.evaluate() == 'dual_blackjacks':
+                    break
             else: 
                 self.stand()
                 break
 
     def hit(self):
-        self.player_cards.append(self.deck.pop(r.randint(0,len(self.deck))))
+        self.player.hand.add_card(self.deck)
         self.show()
 
     def stand(self):
-        while sum(self.dealer_cards) < 17:
-            self.dealer_cards.append(self.deck.pop(r.randint(0,len(self.deck))))
+        while self.dealer.hand.value() < 17:
+            self.dealer.hand.add_card(self.deck)
             self.convert_aces()
         self.show(True)
         self.evaluate(True)
 
     def evaluate(self, display = False):
-
-        player_bust = False
         player_bj = False
-        dealer_bust = False
         dealer_bj = False
 
         self.convert_aces()
 
-
-        if sum(self.player_cards) == 21 and len(self.player_cards) == 2: player_bj = True
-        if sum(self.dealer_cards) == 21 and len(self.dealer_cards) == 2: dealer_bj = True
+        if self.player.hand.value() == 21 and len(self.player.hand.cards) == 2: player_bj = True
+        if self.dealer.hand.value() == 21 and len(self.dealer.hand.cards) == 2: dealer_bj = True
         
         if player_bj == True and dealer_bj == True:
             print(f'Both the dealer and the player have blackjack. The game is a tie.')
@@ -103,22 +101,22 @@ class Game:
             print(f'The dealer has blackjack.\nYou Lose.')
             return 'blackjack'
 
-        if sum(self.player_cards) > 21:
+        if self.player.hand.value() > 21:
             print(f"You are bust!")
             return 'bust'
-        elif sum(self.dealer_cards) > 21:
+        elif self.dealer.hand.value() > 21:
             print(f"The dealer is bust!")
-        elif sum(self.player_cards) > sum(self.dealer_cards) and display == True:
-            print(f"Highest hand is {', '.join(str(x) for x in self.player_cards)} - total: {sum(self.player_cards)}\nYou Win!")
+        elif self.player.hand.value() > self.dealer.hand.value() and display == True:
+            print(f"Highest hand is {', '.join(str(x) for x in self.player.hand.cards)} - total: {self.player.hand.value()}\nYou Win!")
         elif display == True:
-            print(f"Highest hand is {', '.join(str(x) for x in self.dealer_cards)} - total: {sum(self.dealer_cards)}\nYou Lose.")
+            print(f"Highest hand is {', '.join(str(x) for x in self.dealer.hand.cards)} - total: {self.dealer.hand.value()}\nYou Lose.")
 
         #add win tracker
 
 
 
     def convert_aces(self):
-        for hand in [self.dealer_cards,self.player_cards]:
+        for hand in [self.dealer.hand.cards, self.player.hand.cards]:
             aces = []
             for i, num in enumerate(hand):
                 if num == 'a' or num == 1 or num == 11:
